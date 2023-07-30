@@ -11,6 +11,7 @@ import {
   ClassSerializerInterceptor,
   UseInterceptors,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/createUser.dto';
@@ -20,6 +21,8 @@ import { AuthGuard } from 'src/guards/auth.guard';
 import { RegisterUserDto } from './dtos/registerUser.dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dtos/LoginUser.dto';
+import { CurrentUser } from './decorators/currentUser.decorator';
+import { User } from './user.entity';
 
 @Controller('/api/v1/users')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -35,6 +38,12 @@ export class UserController {
   getAllUser() {
     console.log('Second!!');
     return this.userService.findAll();
+  }
+
+  @Get('/current-user')
+  @UseGuards(AuthGuard)
+  getCurrentUser(@CurrentUser() currentUser: User) {
+    return currentUser;
   }
 
   @Get('/:id')
