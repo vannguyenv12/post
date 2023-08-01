@@ -16,17 +16,16 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { UpdateUserDto } from './dtos/updateUser.dto';
-import { LoggingInterceptor } from 'src/interceptors/logging.interceptor';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RegisterUserDto } from './dtos/registerUser.dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dtos/LoginUser.dto';
 import { CurrentUser } from './decorators/currentUser.decorator';
 import { User } from './user.entity';
+import { RoleGuard } from 'src/guards/role.guard';
 
 @Controller('/api/v1/users')
 @UseInterceptors(ClassSerializerInterceptor)
-@UseInterceptors(LoggingInterceptor)
 export class UserController {
   constructor(
     private userService: UserService,
@@ -34,9 +33,9 @@ export class UserController {
   ) {}
 
   @Get()
+  @UseGuards(new RoleGuard(['user', 'admin']))
   @UseGuards(AuthGuard)
   getAllUser() {
-    console.log('Second!!');
     return this.userService.findAll();
   }
 
@@ -52,16 +51,24 @@ export class UserController {
   }
 
   @Put('/:id')
+  @UseGuards(new RoleGuard(['user', 'admin', 'mod']))
+  @UseGuards(AuthGuard)
   updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() requestBody: UpdateUserDto,
+    @CurrentUser() currentUser: User,
   ) {
-    return this.userService.updateById(id, requestBody);
+    return this.userService.updateById(id, requestBody, currentUser);
   }
 
   @Delete('/:id')
-  deleteUser(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.deleteById(id);
+  @UseGuards(new RoleGuard(['user', 'admin', 'mod']))
+  @UseGuards(AuthGuard)
+  deleteUser(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() currentUser: User,
+  ) {
+    return this.userService.deleteById(id, currentUser);
   }
 
   @Post('/register')

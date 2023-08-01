@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
-enum ROLES {
+export enum ROLES {
   ADMIN = 'ADMIN',
   MOD = 'MOD',
   USER = 'USER',

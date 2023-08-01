@@ -4,6 +4,7 @@ import { RegisterUserDto } from './dtos/registerUser.dto';
 import { UserService } from './user.service';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dtos/LoginUser.dto';
+import { UserHelper } from 'src/helpers/user.helper';
 
 @Injectable()
 export class AuthService {
@@ -20,20 +21,13 @@ export class AuthService {
     }
 
     // hash password
-    const hashedPassword = await bcrypt.hash(requestBody.password, 10);
-    requestBody.password = hashedPassword;
+    UserHelper.hashPassword(requestBody.password);
 
     // save to db
     const savedUser = await this.userService.create(requestBody);
 
     // generate jwt token
-    const payload = {
-      id: savedUser.id,
-      firstName: savedUser.firstName,
-      lastName: savedUser.lastName,
-      email: savedUser.email,
-      role: savedUser.role,
-    };
+    const payload = UserHelper.generateUserPayload(savedUser);
 
     const access_token = await this.jwtService.signAsync(payload, {
       secret: process.env.JWT_SECRET,
@@ -64,13 +58,7 @@ export class AuthService {
     }
 
     // generate jwt token
-    const payload = {
-      id: userByEmail.id,
-      firstName: userByEmail.firstName,
-      lastName: userByEmail.lastName,
-      email: userByEmail.email,
-      role: userByEmail.role,
-    };
+    const payload = UserHelper.generateUserPayload(userByEmail);
 
     const access_token = await this.jwtService.signAsync(payload, {
       secret: process.env.JWT_SECRET,
