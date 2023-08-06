@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { Post } from 'src/post/post.entity';
 
 export enum ROLES {
   ADMIN = 'ADMIN',
@@ -28,4 +29,7 @@ export class User {
   @Column({ default: ROLES.USER })
   @Exclude()
   role: ROLES;
+
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
 }
