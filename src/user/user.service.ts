@@ -57,7 +57,8 @@ export class UserService {
     user = { ...user, ...requestBody };
 
     // hash password
-    UserHelper.hashPassword(requestBody);
+    const hashedPassword = await bcrypt.hash(requestBody.password, 10);
+    requestBody.password = hashedPassword;
 
     const updatedUser = await this.userRepo.save(user);
 
