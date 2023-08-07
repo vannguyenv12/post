@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { User } from 'src/user/user.entity';
 import {
   Column,
@@ -28,5 +29,6 @@ export class Post {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.posts)
+  @Transform(({ obj }) => obj.user.id)
   user: User;
 }

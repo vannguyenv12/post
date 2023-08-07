@@ -21,7 +21,8 @@ export class AuthService {
     }
 
     // hash password
-    UserHelper.hashPassword(requestBody.password);
+    const hashedPassword = await bcrypt.hash(requestBody.password, 10);
+    requestBody.password = hashedPassword;
 
     // save to db
     const savedUser = await this.userService.create(requestBody);
