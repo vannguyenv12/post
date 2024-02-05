@@ -37,6 +37,7 @@ export class AuthService {
     return {
       msg: 'User has been created!',
       access_token,
+      data: savedUser,
     };
   }
 
@@ -66,8 +67,9 @@ export class AuthService {
     });
 
     return {
-      msg: 'User has been login succesfully!',
+      msg: 'User has been login successfully!',
       access_token,
+      data: userByEmail,
     };
   }
 }
